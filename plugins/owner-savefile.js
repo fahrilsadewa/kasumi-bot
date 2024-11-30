@@ -5,8 +5,8 @@ const util = require('util')
 const _fs = fs.promises
 
 let handler = async (m, { conn, text, usedPrefix, command, __dirname }) => {
-  if (!text) return m.reply(`Where is the path?, Example: ${usedPrefix + command} plugins/misc/sc.js`)
-  if (!m.quoted) return m.reply('Reply code!')
+  if (!text) return m.reply(Func.example(usedPrefix, command, 'menu.js'))
+  if (!m.quoted) return m.reply(Func.texted('bold', 'Reply code!'))
   if (/p(lugin)?/i.test(command)) {
     let filename = text.replace(/plugin(s)\//i, '') + (/\.js$/i.test(text) ? '' : '.js')
     const error = syntaxError(m.quoted.text, filename, {
