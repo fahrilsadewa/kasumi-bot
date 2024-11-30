@@ -41,8 +41,8 @@ global.media = {
 /** fill in if necessary **/
 global.key = {
   github_token: 'GITHUB_TOKEN', // please fill in https://github.com/settings/tokens/
-  github_owner: 'Im-Dims', // your github name 
-  github_repo: 'Database-doang-sih', // your repo name 
+  github_owner: 'NAME_GITHUB', // your github name 
+  github_repo: 'GITHUB_REPO', // your repo name 
   github_branch: 'main', // don't change it!
   groq: ''
 }
