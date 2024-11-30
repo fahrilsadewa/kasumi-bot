@@ -1,17 +1,10 @@
 const fs = require('fs')
-const path = require('path')
 const axios = require('axios')
+const REPO_NAME = 'kasumi-bot'
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
   if (!text) return m.reply(Func.example(usedPrefix, command, 'filePath/example.js'))
   if (!m.quoted) return m.reply(Func.texted('bold', 'Reply code!'))
-
-  const REPO_NAME = 'kasumi-bot'
-
-  const readFileAsBase64 = (filePath) => {
-    const fileData = fs.readFileSync(filePath)
-    return fileData.toString('base64')
-  }
 
   const getFileSHA = async (githubPath) => {
     try {
@@ -35,18 +28,19 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 
       const sha = await getFileSHA(githubPath)
 
-      const response = await axios.put(url, { 
+      const response = await axios.put(url, {
         message: `Update file ${fileName}`,
         content: content,
         branch: global.key.github_branch,
-        ...(sha && { sha }), 
+        ...(sha && { sha }),
       }, {
         headers: {
           Authorization: `token ${global.key.github_token}`,
         },
       })
 
-      return `File ${fileName} berhasil diupload ke GitHub! Path: ${response.data.content.path}`
+      const fileUrl = `https://github.com/${global.key.github_owner}/${REPO_NAME}/blob/${global.key.github_branch}/${githubPath}`
+      return `File ${fileName} berhasil diupload ke GitHub!\n\nPath: ${response.data.content.path}\nURL: ${fileUrl}`
     } catch (error) {
       throw new Error(`Gagal mengupload file ${fileName}: ${error.response?.data?.message || error.message}`)
     }
