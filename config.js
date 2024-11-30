@@ -51,7 +51,7 @@ global.key = {
 global.databaseurl = ''
 
 /** enter your bot number to login using the code **/
-global.pairingNumber = 6283867587556
+global.pairingNumber = 62895385006567
 
 /** enter your replit link, so it's active 24/7 **/
 global.replit_url = ''
