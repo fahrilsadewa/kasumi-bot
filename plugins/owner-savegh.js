@@ -5,32 +5,53 @@ const axios = require('axios')
 let handler = async (m, { conn, text, usedPrefix, command }) => {
   if (!text) return m.reply(Func.example(usedPrefix, command, 'filePath/example.js'))
   if (!m.quoted) return m.reply(Func.texted('bold', 'Reply code!'))
+
   const REPO_NAME = 'kasumi-bot'
-  
+
   const readFileAsBase64 = (filePath) => {
     const fileData = fs.readFileSync(filePath)
     return fileData.toString('base64')
+  }
+
+  const getFileSHA = async (githubPath) => {
+    try {
+      const url = `https://api.github.com/repos/${global.key.github_owner}/${REPO_NAME}/contents/${githubPath}`
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: `token ${global.key.github_token}`,
+        },
+      })
+      return response.data.sha
+    } catch (error) {
+      if (error.response?.status === 404) return null
+      throw new Error(`Gagal mendapatkan SHA file: ${error.response?.data?.message || error.message}`)
+    }
   }
 
   const uploadFileToGitHub = async (content, fileName, folderPath = '') => {
     try {
       const githubPath = folderPath ? `${folderPath}/${fileName}` : fileName
       const url = `https://api.github.com/repos/${global.key.github_owner}/${REPO_NAME}/contents/${githubPath}`
-      const response = await axios.put(url, {
-        message: `Upload file ${fileName}`,
+
+      const sha = await getFileSHA(githubPath)
+
+      const response = await axios.put(url, { 
+        message: `Update file ${fileName}`,
         content: content,
         branch: global.key.github_branch,
+        ...(sha && { sha }), 
       }, {
         headers: {
           Authorization: `token ${global.key.github_token}`,
         },
       })
+
       return `File ${fileName} berhasil diupload ke GitHub! Path: ${response.data.content.path}`
     } catch (error) {
       throw new Error(`Gagal mengupload file ${fileName}: ${error.response?.data?.message || error.message}`)
     }
   }
-  
+
   if (/g(ithub)?/i.test(command)) {
     const filename = text.replace(/github(s)?\//i, '') + (/\.js$/i.test(text) ? '' : '.js')
     const error = require('syntax-error')(m.quoted.text, filename, {
