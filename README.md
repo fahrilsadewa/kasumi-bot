@@ -1,4 +1,4 @@
-### KASUMI-BO5
+### KASUMI-BOT
 > This script is 100% free, which uses the api from [AlyaChan-APIs](https://api.alyachan.pro) and [SsaTeam-APIs](https://api.ssateam.my.id)
 
 ### What is needed
