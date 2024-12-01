@@ -71,7 +71,7 @@ let handler = async (m, { conn, text, usedPrefix, command, __dirname }) => {
     const base64Content = Buffer.from(media).toString('base64')
     const decodedText = Buffer.from(base64Content, 'base64').toString('utf-8')
     const pathFile = ''
-    const filename = text.replace(/github(s)?\//i, '') + (/\.js$/i.test(decodedText) ? '' : '.js')
+    const filename = text.replace(/github(s)?\//i, '') + (/\.js$/i.test(text) ? '' : '.js')
     try {
       const result = await uploadFileToGitHub(base64Content, filename, pathFile)
       m.reply(result)
