@@ -9,7 +9,7 @@ let handler = async (m, { conn, text, usedPrefix, command, __dirname }) => {
   if (!global.key.github_owner || !global.key.github_token) {
     return m.reply('GitHub configuration is missing. Set GITHUB_OWNER and GITHUB_TOKEN.')
   }
-
+  
   const getFileSHA = async (githubPath) => {
     try {
       const url = `https://api.github.com/repos/${global.key.github_owner}/${REPO_NAME}/contents/${githubPath}`
@@ -21,21 +21,19 @@ let handler = async (m, { conn, text, usedPrefix, command, __dirname }) => {
       return response.data.sha
     } catch (error) {
       if (error.response?.status === 404) return null
-      throw new Error(`Failed to get file SHA: ${error.response?.data?.message || error.message}`)
+      throw new Error(`Gagal mendapatkan SHA file: ${error.response?.data?.message || error.message}`)
     }
   }
 
   const uploadFileToGitHub = async (content, fileName, folderPath = '') => {
     try {
-      const finalFileName = /\.(js|json|txt|md)$/i.test(fileName) ? fileName : `${fileName}.js`
-      const githubPath = folderPath ? `${folderPath}/${finalFileName}` : finalFileName
-
+      const githubPath = folderPath ? `${folderPath}/${fileName}` : fileName
       const url = `https://api.github.com/repos/${global.key.github_owner}/${REPO_NAME}/contents/${githubPath}`
 
       const sha = await getFileSHA(githubPath)
 
       const response = await axios.put(url, {
-        message: `Update file ${finalFileName}`,
+        message: `Update file ${fileName}`,
         content: content,
         branch: global.key.github_branch,
         ...(sha && { sha }),
@@ -46,46 +44,42 @@ let handler = async (m, { conn, text, usedPrefix, command, __dirname }) => {
       })
 
       const fileUrl = `https://github.com/${global.key.github_owner}/${REPO_NAME}/blob/${global.key.github_branch}/${githubPath}`
-      return `File ${finalFileName} successfully uploaded to GitHub!\n\nPath: ${response.data.content.path}\nURL: ${fileUrl}`
+      return `File ${fileName} berhasil diupload ke GitHub!\n\nPath: ${response.data.content.path}\nURL: ${fileUrl}`
     } catch (error) {
-      throw new Error(`Failed to upload file: ${error.response?.data?.message || error.message}`)
+      throw new Error(`Gagal mengupload file ${fileName}: ${error.response?.data?.message || error.message}`)
     }
   }
 
-  try {
-    let base64Content, 
-    filename, 
-    uploadPath
-    if (/g(ithub)?/i.test(command)) {
-      filename = text.replace(/github(s)?\//i, '') 
-      filename = /\.js$/i.test(filename) ? filename : `${filename}.js`
-
-      const error = require('syntax-error')(m.quoted.text, filename, {
-        sourceType: 'module',
-        allowReturnOutsideFunction: true,
-        allowAwaitOutsideFunction: true,
-      })
-      if (error) return m.reply(`Syntax Error:\n${error}`)
-
-      base64Content = Buffer.from(m.quoted.text).toString('base64')
-      uploadPath = 'plugins'
-    } else if (m.quoted.mediaMessage) {
-      const media = await m.quoted.download()
-      base64Content = Buffer.from(media).toString('base64')
-      filename = text
-      uploadPath = 'uploads'
-    } else {
-      return m.reply('Unsupported file type!')
+  if (/g(ithub)?/i.test(command)) {
+    const filename = text.replace(/github(s)?\//i, '') + (/\.js$/i.test(text) ? '' : '.js')
+    const error = require('syntax-error')(m.quoted.text, filename, {
+      sourceType: 'module',
+      allowReturnOutsideFunction: true,
+      allowAwaitOutsideFunction: true,
+    })
+    if (error) return m.reply(`Syntax Error:\n${error}`)
+    const base64Content = Buffer.from(m.quoted.text).toString('base64')
+    try {
+      const pathFile = ''
+      const result = await uploadFileToGitHub(base64Content, filename, pathFile)
+      m.reply(result)
+    } catch (err) {
+      m.reply(err.message)
     }
-
-    const result = await uploadFileToGitHub(base64Content, filename, uploadPath)
-    m.reply(result)
-  } catch (err) {
-    m.reply(`Upload failed: ${err.message}`)
+  } else if (m.quoted.mediaMessage) {
+    const media = await m.quoted.download()
+    const base64Content = Buffer.from(media).toString('base64')
+    try {
+      const result = await uploadFileToGitHub(base64Content, text, 'uploads')
+      m.reply(result)
+    } catch (err) {
+      m.reply(err.message)
+    }
+  } else {
+    return m.reply('Jenis file tidak didukung!')
   }
 }
-
-handler.help = ['savegithub <path>']
+handler.help = ['savegithub']
 handler.tags = ['owner']
 handler.command = /^(sg|savegithub)$/i
 handler.rowner = true
