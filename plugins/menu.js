@@ -240,8 +240,32 @@ If you find an error or want to upgrade premium plan contact the owner.
           enabled: !plugin.disabled,
         }
       })
-
-      if (teks == '404' && m.isGroup) {
+      if (teks == '404') {
+        let caption = `Oh hi @${m.sender.replace(/@.+/g, '')}👋!\n`
+        caption += `I am an automated system (WhatsApp Bot) that can help to do something, search and get data / information only through WhatsApp.\n\n`
+        caption += `> ◎ *Library* : Baileys\n`
+        caption += `> ◎ *Version* : ${require('../package.json').version}\n`
+        caption += `> ◎ *Rest API* : https://api.ssateam.my.id\n`
+        caption += `> ◎ *Source* : https://github.com/Im-Dims/kasumi-bot\n\n`
+        caption += `If you find an error or want to upgrade premium plan contact the owner.\n\n`
+        caption += `┌  ∘  ${_p + command} anonymous\n`
+        caption += `│  ∘  ${_p + command} database\n`
+        caption += `│  ∘  ${_p + command} downloader\n`
+        caption += `│  ∘  ${_p + command} effect\n`
+        caption += `│  ∘  ${_p + command} fun\n`
+        caption += `│  ∘  ${_p + command} game\n`
+        caption += `│  ∘  ${_p + command} group\n`
+        caption += `│  ∘  ${_p + command} info\n`
+        caption += `│  ∘  ${_p + command} internet\n`
+        caption += `│  ∘  ${_p + command} maker\n`
+        caption += `│  ∘  ${_p + command} owner\n`
+        caption += `│  ∘  ${_p + command} sticker\n`
+        caption += `│  ∘  ${_p + command} tools\n`
+        caption += `│  ∘  ${_p + command} xp\n`
+        caption += `└  ∘  ${_p + command} voice`
+        return conn.sendFMessage(m.chat, "", caption.trim(), global.set.footer, setting.cover, m)
+      }
+      /*if (teks == '404' && m.isGroup) {
         let caption = `Oh hi @${m.sender.replace(/@.+/g, '')}👋!\n`
         caption += `I am an automated system (WhatsApp Bot) that can help to do something, search and get data / information only through WhatsApp.\n\n`
         caption += `> ◎ *Library* : Baileys\n`
@@ -308,7 +332,7 @@ If you find an error or want to upgrade premium plan contact the owner.
           sections
         }
         return conn.sendMessage(m.chat, listMessage, { quoted: m })
-      }      
+      }*/
       let groups = {}
       for (let tag in tags) {
         groups[tag] = []
