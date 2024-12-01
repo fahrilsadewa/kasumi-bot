@@ -51,6 +51,7 @@ let handler = async (m, { conn, text, usedPrefix, command, __dirname }) => {
   }
 
   if (/g(ithub)?/i.test(command)) {
+    const pathFile = ''
     const filename = text.replace(/github(s)?\//i, '') + (/\.js$/i.test(text) ? '' : '.js')
     const error = require('syntax-error')(m.quoted.text, filename, {
       sourceType: 'module',
@@ -60,17 +61,19 @@ let handler = async (m, { conn, text, usedPrefix, command, __dirname }) => {
     if (error) return m.reply(`Syntax Error:\n${error}`)
     const base64Content = Buffer.from(m.quoted.text).toString('base64')
     try {
-      const pathFile = ''
       const result = await uploadFileToGitHub(base64Content, filename, pathFile)
       m.reply(result)
     } catch (err) {
       m.reply(err.message)
     }
-  } else if (m.quoted.mediaMessage) {
+  } else if (m.quoted.mtype === 'documentMessage') {
     const media = await m.quoted.download()
     const base64Content = Buffer.from(media).toString('base64')
+    const decodedText = Buffer.from(base64Content, 'base64').toString('utf-8')
+    const pathFile = ''
+    const filename = text.replace(/github(s)?\//i, '') + (/\.js$/i.test(decodedText) ? '' : '.js')
     try {
-      const result = await uploadFileToGitHub(base64Content, text, 'uploads')
+      const result = await uploadFileToGitHub(base64Content, filename, pathFile)
       m.reply(result)
     } catch (err) {
       m.reply(err.message)
