@@ -1,7 +1,7 @@
 const fs = require('fs')
 
 /** enter owner number **/
-global.owner = ['62895385006567']
+global.owner = ['6281286695335']
 global.owner_name = 'Dimas Triyatno'
 
 /** function and scraper to make it more practical **/
@@ -40,9 +40,9 @@ global.media = {
 
 /** fill in if necessary **/
 global.key = {
-  github_token: 'GITHUB_TOKEN', // please fill in https://github.com/settings/tokens/
-  github_owner: 'NAME_GITHUB', // your github name 
-  github_repo: 'GITHUB_REPO', // your repo name 
+  github_token: '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', // please fill in https://github.com/settings/tokens/
+  github_owner: 'fahrilsadewa', // your github name 
+  github_repo: 'kasumi-bot', // your repo name 
   github_branch: 'main', // don't change it!
   groq: ''
 }
@@ -51,7 +51,7 @@ global.key = {
 global.databaseurl = ''
 
 /** enter your bot number to login using the code **/
-global.pairingNumber = 62895385006567
+global.pairingNumber = 6281286695335
 
 /** enter your replit link, so it's active 24/7 **/
 global.replit_url = ''
